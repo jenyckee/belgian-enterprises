@@ -1,0 +1,8 @@
+.env
+.env.local
+
+#  python
+__pycache__/
+
+#  data
+data/*.csv
