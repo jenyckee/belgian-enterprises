@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, text
 
-from api.schemas import Contact, Denomination, EnterpriseDetail, Establishment
+from api.schemas import Contact, Denomination, EnterpriseDetail, EnterpriseWithDenomination, Establishment
 from db.database import get_session
 from db.models import Address, Contact as ContactModel, Denomination as DenominationModel, Enterprise, Establishment as EstablishmentModel
 
@@ -44,6 +44,38 @@ def get_enterprise_contact(enterprise_number: str, session=Depends(get_session))
 def get_enterprise_denominations(enterprise_number: str, session=Depends(get_session)) -> list[Denomination]:
     stmt = select(DenominationModel).where(DenominationModel.entity_number == enterprise_number)
     return session.scalars(stmt).all()
+
+
+@router.get("/enterprises", response_model=list[EnterpriseWithDenomination])
+def get_enterprises_by_nace(nace: str, session=Depends(get_session)) -> list[EnterpriseWithDenomination]:
+    stmt = text("""
+        SELECT r.*, d.denomination
+        FROM (
+            SELECT DISTINCT
+                COALESCE(e_ent.enterprise_number, e2.enterprise_number) AS enterprise_number,
+                COALESCE(e_ent.status, e2.status) AS status,
+                COALESCE(e_ent.start_date, e2.start_date) AS start_date,
+                a.nace_code,
+                a.nace_version
+            FROM activities a
+            LEFT JOIN enterprises e_ent
+                ON e_ent.enterprise_number = a.entity_number
+            LEFT JOIN establishments est
+                ON est.establishment_number = a.entity_number
+            LEFT JOIN enterprises e2
+                ON e2.enterprise_number = est.enterprise_number
+            WHERE a.nace_code LIKE :nace_pattern
+              AND a.classification = 'MAIN'
+              AND (e_ent.status = 'AC' OR (e_ent.status IS NULL AND e2.status = 'AC'))
+            ORDER BY 1, nace_version DESC
+            LIMIT 100
+        ) r
+        LEFT JOIN denominations d ON d.entity_number = r.enterprise_number
+        ORDER BY r.enterprise_number, r.nace_version DESC
+        LIMIT 100
+    """)
+    rows = session.execute(stmt, {"nace_pattern": f"{nace}%"}).mappings().all()
+    return rows
 
 
 @router.get("/establishment/{establishment_number}", response_model=Establishment)

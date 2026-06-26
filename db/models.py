@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -8,6 +8,10 @@ from db.database import Base
 
 class Enterprise(Base):
     __tablename__ = "enterprises"
+
+    __table_args__ = (
+        Index("ix_enterprises_status", "status", "enterprise_number"),
+    )
 
     enterprise_number: Mapped[str] = mapped_column("enterprise_number", String(20), primary_key=True)
     status: Mapped[str | None] = mapped_column("status", String(50), nullable=True)
@@ -23,6 +27,10 @@ class Enterprise(Base):
 
 class Establishment(Base):
     __tablename__ = "establishments"
+
+    __table_args__ = (
+        Index("ix_establishments_enterprise_number", "enterprise_number"),
+    )
 
     establishment_number: Mapped[str] = mapped_column("establishment_number", String(20), primary_key=True)
     start_date: Mapped[str | None] = mapped_column("start_date", String(20), nullable=True)
@@ -63,6 +71,10 @@ class Contact(Base):
 class Denomination(Base):
     __tablename__ = "denominations"
 
+    __table_args__ = (
+        Index("ix_denominations_entity_number", "entity_number"),
+    )
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     entity_number: Mapped[str | None] = mapped_column("entity_number", String(20), nullable=True)
     language: Mapped[str | None] = mapped_column("language", String(10), nullable=True)
@@ -72,6 +84,19 @@ class Denomination(Base):
 
 class Activity(Base):
     __tablename__ = "activities"
+
+    __table_args__ = (
+        Index(
+            "ix_activities_nace_code_classification",
+            "nace_code",
+            "classification",
+            "entity_number",
+            "nace_version",
+            postgresql_using="btree",
+            postgresql_ops={"nace_code": "varchar_pattern_ops"},
+        ),
+        Index("ix_activities_entity_number", "entity_number"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     entity_number: Mapped[str | None] = mapped_column("entity_number", String(20), nullable=True)

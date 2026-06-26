@@ -64,6 +64,18 @@ class Establishment(BaseModel):
         orm_mode = True
 
 
+class EnterpriseWithDenomination(BaseModel):
+    enterprise_number: str
+    status: str | None = None
+    start_date: str | None = None
+    nace_code: str | None = None
+    nace_version: str | None = None
+    denomination: str | None = None
+
+    class Config:
+        orm_mode = True
+
+
 class EnterpriseDetail(EnterpriseBase):
     addresses: list[Address] = []
     contacts: list[Contact] = []
