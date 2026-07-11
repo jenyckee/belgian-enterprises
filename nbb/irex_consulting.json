@@ -1,0 +1,188 @@
+[
+    {
+        "ReferenceNumber": "2025-00570954",
+        "DepositDate": "2025-11-26",
+        "ExerciseDates": {
+            "startDate": "2024-01-01",
+            "endDate": "2024-12-31"
+        },
+        "ModelType": "m81-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2025-06-20",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2025-00570954/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    },
+    {
+        "ReferenceNumber": "2021-69200462",
+        "DepositDate": "2021-09-30",
+        "ExerciseDates": {
+            "startDate": "2020-01-01",
+            "endDate": "2020-12-31"
+        },
+        "ModelType": "m01-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2021-06-04",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2021-69200462/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    },
+    {
+        "ReferenceNumber": "2020-54400111",
+        "DepositDate": "2020-09-22",
+        "ExerciseDates": {
+            "startDate": "2018-01-01",
+            "endDate": "2019-12-31"
+        },
+        "ModelType": "m01-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2020-06-05",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2020-54400111/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    },
+    {
+        "ReferenceNumber": "2022-20462221",
+        "DepositDate": "2022-10-17",
+        "ExerciseDates": {
+            "startDate": "2021-01-01",
+            "endDate": "2021-12-31"
+        },
+        "ModelType": "m01-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2022-06-03",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2022-20462221/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    },
+    {
+        "ReferenceNumber": "2023-00459896",
+        "DepositDate": "2023-09-29",
+        "ExerciseDates": {
+            "startDate": "2022-01-01",
+            "endDate": "2022-12-31"
+        },
+        "ModelType": "m81-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2023-06-02",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2023-00459896/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    },
+    {
+        "ReferenceNumber": "2024-00479492",
+        "DepositDate": "2024-09-30",
+        "ExerciseDates": {
+            "startDate": "2023-01-01",
+            "endDate": "2023-12-31"
+        },
+        "ModelType": "m81-f",
+        "DepositType": "Initial",
+        "Language": "NL",
+        "Currency": "EUR",
+        "EnterpriseNumber": "0689587747",
+        "EnterpriseName": "irex Consulting",
+        "Address": {
+            "Box": null,
+            "City": "Bierbeek",
+            "CountryCode": "BE",
+            "Number": "89",
+            "PostalCode": "3360",
+            "Street": "Bierbeekstraat"
+        },
+        "LegalForm": "610",
+        "LegalSituation": "000",
+        "FullFillLegalValidation": true,
+        "ActivityCode": "70220",
+        "GeneralAssemblyDate": "2024-06-07",
+        "AccountingDataURL": "https://ws.cbso.nbb.be/authentic/deposit/2024-00479492/accountingData",
+        "DataVersion": "Authentic",
+        "ImprovementDate": null,
+        "CorrectedData": null
+    }
+]

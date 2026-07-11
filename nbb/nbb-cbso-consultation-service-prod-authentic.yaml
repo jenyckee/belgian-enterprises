@@ -1,0 +1,437 @@
+openapi: 3.0.1
+info:
+  title: NBB CBSO Consultation service for authentic data (prod)
+  description: '<p>This service provides summarized information about the annual accounts that were filed to the Central Balance Sheet Office of the National Bank of Belgium.</p> <p>This service allows to retrieve the following information:</p> <ul><li>The references of annual accounts filed to <u>and</u> accepted by NBB</li><li>The annual account documents published to the public portal of NBB</li><li>The reproduction as PDF image by NBB of the published annual accounts</li><li>The improvements made by NBB to a selection of annual accounts</li></ul> <p>The list of references contains all accounts filed to <u>and</u> accepted by NBB. The annual accounts filed to NBB but not accepted yet will not be listed until they are accepted.</p>  <p>(TBC) The list of documents and images of the filed annual accounts is limited to those published to the public portal, some legal entities may have publication exemption.</p> <p>The list of documents (XBRL and JSON formats) of the filed annual accounts is only available for standardized accounts. Not standardized accounts are only available as PDF.</p> <p></p>'
+  termsOfService: http://nowhere.com
+  contact:
+    name: Central Balance Sheet Office helpdesk
+    url: https://www.nbb.be/en/central-balance-sheet-office/central-balance-sheet-office/support-central-balance-sheet-office
+    email: helpdesk.ba@nbb.be
+  license:
+    name: licenceName
+    url: http://nowhere.com/
+  version: '1.0'
+servers:
+  - url: https://ws.cbso.nbb.be/authentic
+paths:
+  '/deposit/{referenceNumber}/accountingData':
+    get:
+      tags:
+        - data
+        - authentic
+      summary: '/deposit/{referenceNumber}/accountingData - GET'
+      description: Returns the data in XBRL or JSON format of an annual account.
+      operationId: get-deposit-referencenumber-accountingdata
+      parameters:
+        - name: referenceNumber
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ReferenceNumber'
+        - name: X-Request-Id
+          in: header
+          description: 'Tracking id (type-4 UUID) of the request, used for debugging and tracability.'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "accounting information for the deposit. This information is returned as a file content\nSelection is made based on the \"Accept\" header of the request. "
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+              examples:
+                default:
+                  value: 
+            application/x.xbrl:
+              schema:
+                type: string
+                format: binary
+              examples:
+                default:
+                  value: 
+            application/x.jsonxbrl:
+              schema:
+                type: string
+                format: binary
+              example: string
+        '400':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+        '500':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+  '/legalEntity/{legalEntityId}/references':
+    get:
+      tags:
+        - authentic
+        - references
+        - legalEntity
+      summary: '/legalEntity/{legalEntityId}/references - GET'
+      description: List of all references of annual accounts related to a legal entity.
+      operationId: get-legalentity-legalentityid-references
+      parameters:
+        - name: legalEntityId
+          in: path
+          description: Number of a legal entity in the Crossroads bank for enterprises (KBO/BCE)
+          required: true
+          schema:
+            type: string
+          example: 203201340
+        - name: year
+          in: query
+          description: 'Fiscal year (year of the accounting exercise end date) for which deposits are searched. This year should be less or equal to the current year. When not defined, the full list of references are returned for this legal entity.'
+          schema:
+            maximum: 2040.0
+            minimum: 1978.0
+            type: integer
+        - name: X-Request-Id
+          in: header
+          description: 'Tracking id (type-4 UUID) of the request, used for debugging and tracability.'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Simple list of references.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reference'
+              example:
+                - ReferenceNumber: todo
+                  DepositDate: string
+                  ExerciseDates:
+                    StartDate: string
+                    EndDate: string
+                  ModelType: string
+                  DepositType: Initial
+                  Language: FR
+                  Currency: string
+                  EnterpriseNumber: string
+                  EnterpriseName: string
+                  Address:
+                    Box: string
+                    City: string
+                    CountryCode: string
+                    Number: string
+                    PostalCode: string
+                    Street: string
+                  LegalForm: string
+                  LegalSituation: string
+                  FullFillLegalValidation: true
+                  ActivityCode: string
+                  GeneralAssemblyDate: string
+                  AccountingDataURL: string
+                  DataVersion: Authentic
+                  ImprovementDate: string
+                  CorrectedData: AA
+        '400':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+        '500':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+  '/deposit/{referenceNumber}/reference':
+    get:
+      tags:
+        - data
+        - authentic
+      summary: '/deposit/{referenceNumber}/reference - GET'
+      description: Returns the reference information about an annual account.
+      operationId: get-deposit-referencenumber-reference
+      parameters:
+        - name: referenceNumber
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ReferenceNumber'
+        - name: X-Request-Id
+          in: header
+          description: 'Tracking id (type-4 UUID) of the request, used for debugging and tracability.'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "metadata information for the deposit. This information is returned in a json document.\nSelection is made based on the \"Accept\" header of the request. "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reference'
+              example:
+                ReferenceNumber: todo
+                DepositDate: string
+                ExerciseDates:
+                  StartDate: string
+                  EndDate: string
+                ModelType: string
+                DepositType: Initial
+                Language: FR
+                Currency: string
+                EnterpriseNumber: string
+                EnterpriseName: string
+                Address:
+                  Box: string
+                  City: string
+                  CountryCode: string
+                  Number: string
+                  PostalCode: string
+                  Street: string
+                LegalForm: string
+                LegalSituation: string
+                FullFillLegalValidation: true
+                ActivityCode: string
+                GeneralAssemblyDate: string
+                AccountingDataURL: string
+                DataVersion: Authentic
+                ImprovementDate: string
+                CorrectedData: AA
+        '400':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+        '500':
+          description: default error response based on problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ThrowableProblem'
+              example:
+                title: string
+                status: 0
+                path: string
+                timestamp: string
+                violations:
+                  - field: string
+                    messageKey: string
+                    defaultMessage: string
+components:
+  schemas:
+    ThrowableProblem:
+      properties:
+        title:
+          type: string
+        status:
+          pattern: '/^[1-5][0-9][0-9]$/'
+          type: integer
+        path:
+          type: string
+        timestamp:
+          pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+          type: string
+        violations:
+          $ref: '#/components/schemas/Violations'
+    Violations:
+      type: array
+      items:
+        $ref: '#/components/schemas/Violation'
+    Violation:
+      properties:
+        field:
+          type: string
+        messageKey:
+          type: string
+        defaultMessage:
+          type: string
+    ReferenceNumber:
+      type: string
+      example: todo
+    Address:
+      properties:
+        Box:
+          type: string
+          description: House Box number
+        City:
+          type: string
+          description: City
+        CountryCode:
+          type: string
+          description: 'Country Code, e.g. Belgium = 150'
+        Number:
+          type: string
+          description: House Number
+        PostalCode:
+          type: string
+          description: postal code of city
+        Street:
+          type: string
+          description: Street name
+    Reference:
+      required:
+        - ReferenceNumber
+        - DepositDate
+        - ExerciseDates
+        - ModelType
+        - DepositType
+        - Language
+        - Currency
+        - EnterpriseNumber
+        - EnterpriseName
+        - DataVersion
+      properties:
+        ReferenceNumber:
+          $ref: '#/components/schemas/ReferenceNumber'
+        DepositDate:
+          type: string
+          description: date of deposit of the annual account
+          format: date
+        ExerciseDates:
+          $ref: '#/components/schemas/Period'
+        ModelType:
+          type: string
+          description: 'type of the model used for the annual account, as defined in the CBSO taxonomy'
+        DepositType:
+          enum:
+            - Initial
+            - Correction
+            - Complementary
+          type: string
+          description: 'type of the deposit (initial, correction, complementary)'
+        Language:
+          enum:
+            - FR
+            - NL
+            - DE
+            - EN
+          type: string
+          description: language used for drawing-up the annual account
+        Currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: currency of the annual account
+        EnterpriseNumber:
+          type: string
+          description: inscription number of the legal entity in the BCE/KBO
+        EnterpriseName:
+          type: string
+          description: official name of the legal entity
+        Address:
+          $ref: '#/components/schemas/Address'
+        LegalForm:
+          type: string
+          description: code kbo of the legal form
+        LegalSituation:
+          type: string
+          description: code kbo of the legal situation
+        FullFillLegalValidation:
+          type: boolean
+          description: 'when still errors detected,  false otherwise true'
+        ActivityCode:
+          type: string
+          description: always empty
+        GeneralAssemblyDate:
+          type: string
+          description: date of the approval of the annual account by the general assembly
+          format: date
+        AccountingDataURL:
+          type: string
+          description: uri of the full data of the annual account
+          format: uri
+        DataVersion:
+          enum:
+            - Authentic
+            - Euro_converted
+            - Pdf_extracted
+            - Corrected
+          type: string
+          description: kind of data
+        ImprovementDate:
+          type: string
+          description: this field is empty when the reference is about an authentic version
+          format: date
+        CorrectedData:
+          enum:
+            - AA
+            - SB
+          type: string
+          description: this value is provided only when data version is corrected
+      additionalProperties: false
+    Period:
+      properties:
+        StartDate:
+          type: string
+          description: start of the period
+          format: date
+        EndDate:
+          type: string
+          description: end of the period
+          format: date
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: NBB-CBSO-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: NBB-CBSO-Subscription-Key
+      in: query
+security:
+  - apiKeyHeader: [ ]
+  - apiKeyQuery: [ ]

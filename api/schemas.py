@@ -81,3 +81,119 @@ class EnterpriseDetail(EnterpriseBase):
     contacts: list[Contact] = []
     denominations: list[Denomination] = []
     establishments: list[Establishment] = []
+
+
+class ExercisePeriod(BaseModel):
+    start_date: str
+    end_date: str
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class NBBAddress(BaseModel):
+    street: str | None = None
+    number: str | None = None
+    box: str | None = None
+    postal_code: str | None = None
+    city: str | None = None
+    country_code: str | None = None
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class Reference(BaseModel):
+    reference_number: str
+    deposit_date: str
+    exercise_dates: ExercisePeriod
+    model_type: str
+    deposit_type: str
+    language: str
+    currency: str
+    enterprise_number: str
+    enterprise_name: str
+    address: NBBAddress | None = None
+    legal_form: str | None = None
+    legal_situation: str | None = None
+    full_fill_legal_validation: bool | None = None
+    activity_code: str | None = None
+    general_assembly_date: str | None = None
+    accounting_data_url: str | None = None
+    data_version: str | None = None
+    corrected_data: str | None = None
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class Rubric(BaseModel):
+    code: str
+    value: str
+    period: str
+    data_type: str
+    type_amount: str
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class LegalFormInfo(BaseModel):
+    legal_form_code: str | None = None
+    legal_form: str | None = None
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class AccountingAddress(BaseModel):
+    street: str | None = None
+    number: str | None = None
+    box: str | None = None
+    city: str | None = None
+    other_postal_code: str | None = None
+    other_city: str | None = None
+    country: str | None = None
+    other_country: str | None = None
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class Administrators(BaseModel):
+    legal_persons: list = []
+    natural_persons: list = []
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class Shareholders(BaseModel):
+    entity_share_holders: list = []
+    individual_share_holders: list = []
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+
+
+class AccountingData(BaseModel):
+    reference_number: str
+    enterprise_name: str
+    address: AccountingAddress | None = None
+    legal_form: LegalFormInfo | None = None
+    rubrics: list[Rubric] = []
+    administrators: Administrators | None = None
+    participating_interests: list = []
+    shareholders: Shareholders | None = None
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
