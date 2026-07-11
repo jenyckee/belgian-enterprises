@@ -17,14 +17,21 @@ from db.models import Activity, Address, Branch, Contact, Denomination, Enterpri
 DATA_DIR = PROJECT_ROOT / "data"
 BATCH_SIZE = 5000
 
+def _is_main_activity(row: dict[str, str]) -> bool:
+    return row.get("Classification") == "MAIN"
+
+
 CSV_MAP = [
-    ("enterprise.csv", Enterprise, ["EnterpriseNumber", "Status", "JuridicalSituation", "TypeOfEnterprise", "JuridicalForm", "JuridicalFormCAC", "StartDate"]),
-    ("establishment.csv", Establishment, ["EstablishmentNumber", "StartDate", "EnterpriseNumber"]),
-    ("address.csv", Address, ["EntityNumber", "TypeOfAddress", "CountryNL", "CountryFR", "Zipcode", "MunicipalityNL", "MunicipalityFR", "StreetNL", "StreetFR", "HouseNumber", "Box", "ExtraAddressInfo", "DateStrikingOff"]),
-    ("contact.csv", Contact, ["EntityNumber", "EntityContact", "ContactType", "Value"]),
-    ("denomination.csv", Denomination, ["EntityNumber", "Language", "TypeOfDenomination", "Denomination"]),
-    ("activity.csv", Activity, ["EntityNumber", "ActivityGroup", "NaceVersion", "NaceCode", "Classification"]),
-    ("branch.csv", Branch, ["Id", "StartDate", "EnterpriseNumber"]),
+    ("enterprise.csv", Enterprise, ["EnterpriseNumber", "Status", "JuridicalSituation", "TypeOfEnterprise", "JuridicalForm", "JuridicalFormCAC", "StartDate"], None),
+    ("establishment.csv", Establishment, ["EstablishmentNumber", "StartDate", "EnterpriseNumber"], None),
+    ("address.csv", Address, ["EntityNumber", "TypeOfAddress", "CountryNL", "CountryFR", "Zipcode", "MunicipalityNL", "MunicipalityFR", "StreetNL", "StreetFR", "HouseNumber", "Box", "ExtraAddressInfo", "DateStrikingOff"], None),
+    ("contact.csv", Contact, ["EntityNumber", "EntityContact", "ContactType", "Value"], None),
+    ("denomination.csv", Denomination, ["EntityNumber", "Language", "TypeOfDenomination", "Denomination"], None),
+    # Only the MAIN activity is queried (see api/routes.py get_enterprises_by_nace),
+    # and entities repeat rows per nace_version/activity_group/classification —
+    # skipping SECO/ANCI rows here removes the bulk of the table's size.
+    ("activity.csv", Activity, ["EntityNumber", "ActivityGroup", "NaceVersion", "NaceCode", "Classification"], _is_main_activity),
+    ("branch.csv", Branch, ["Id", "StartDate", "EnterpriseNumber"], None),
 ]
 
 KEY_MAPPING = {
@@ -87,7 +94,7 @@ def flush_batch(conn, model: type[Base], batch: list[dict[str, str | None]], con
     batch.clear()
 
 
-def ingest_table(file_name: str, model: type[Base], columns: list[str]) -> None:
+def ingest_table(file_name: str, model: type[Base], columns: list[str], row_filter=None) -> None:
     path = DATA_DIR / file_name
     print(f"Ingesting {file_name}", flush=True)
 
@@ -96,8 +103,13 @@ def ingest_table(file_name: str, model: type[Base], columns: list[str]) -> None:
         batch: list[dict[str, str | None]] = []
         conflict_columns = [col for col in model.__table__.primary_key.columns]
         row_count = 0
+        skipped_count = 0
 
         for row in reader:
+            if row_filter is not None and not row_filter(row):
+                skipped_count += 1
+                continue
+
             data = normalize_record(row)
             autoincrement_pk = next(iter(model.__table__.primary_key.columns)).autoincrement
             if autoincrement_pk is True and data.get("id") is None:
@@ -108,7 +120,7 @@ def ingest_table(file_name: str, model: type[Base], columns: list[str]) -> None:
                 flush_batch(conn, model, batch, conflict_columns)
 
         flush_batch(conn, model, batch, conflict_columns)
-        print(f"  Processed {row_count} rows from {file_name}", flush=True)
+        print(f"  Processed {row_count} rows from {file_name} (skipped {skipped_count})", flush=True)
 
 
 def main() -> None:
@@ -118,8 +130,8 @@ def main() -> None:
         Base.metadata.create_all(bind=conn)
     print("Database schema created:", [table.name for table in Base.metadata.sorted_tables], flush=True)
 
-    for file_name, model, columns in CSV_MAP:
-        ingest_table(file_name, model, columns)
+    for file_name, model, columns, row_filter in CSV_MAP:
+        ingest_table(file_name, model, columns, row_filter)
 
     print("Ingestion complete.", flush=True)
 
