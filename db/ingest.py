@@ -124,6 +124,16 @@ def ingest_table(file_name: str, model: type[Base], columns: list[str], row_filt
 
 
 def main() -> None:
+    # Secondary indexes are built after the bulk load instead of before it: an index
+    # created ahead of millions of incremental batch inserts gets built via random-order
+    # btree page splits, which bloats it well beyond what a single sorted build needs.
+    # Primary keys stay in place since flush_batch()'s ON CONFLICT upsert needs them.
+    deferred_indexes = []
+    for table in Base.metadata.tables.values():
+        for index in list(table.indexes):
+            table.indexes.discard(index)
+            deferred_indexes.append(index)
+
     print(f"Creating database schema using {engine.url}...", flush=True)
     with engine.begin() as conn:
         Base.metadata.drop_all(bind=conn)
@@ -132,6 +142,12 @@ def main() -> None:
 
     for file_name, model, columns, row_filter in CSV_MAP:
         ingest_table(file_name, model, columns, row_filter)
+
+    print(f"Building {len(deferred_indexes)} indexes...", flush=True)
+    with engine.begin() as conn:
+        for index in deferred_indexes:
+            print(f"  Creating index {index.name}", flush=True)
+            index.create(bind=conn)
 
     print("Ingestion complete.", flush=True)
 
